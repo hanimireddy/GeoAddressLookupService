@@ -8,5 +8,35 @@
     "name": "spring.jackson.serialization-inclusion",
     "type": "java.lang.String",
     "description": "A description for 'spring.jackson.serialization-inclusion'"
+  },
+  {
+    "name": "geo.reversecoding.url",
+    "type": "java.lang.String",
+    "description": "A description for 'geo.reversecoding.url'"
+  },
+  {
+    "name": "rest.client.read.timeout",
+    "type": "java.lang.String",
+    "description": "A description for 'rest.client.read.timeout'"
+  },
+  {
+    "name": "rest.client.connction.timeout",
+    "type": "java.lang.String",
+    "description": "A description for 'rest.client.connction.timeout'"
+  },
+  {
+    "name": "cache.object.timeToLive",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.object.timeToLive'"
+  },
+  {
+    "name": "cache.cleanup.timeInterval",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.cleanup.timeInterval'"
+  },
+  {
+    "name": "cache.maxSize",
+    "type": "java.lang.String",
+    "description": "A description for 'cache.maxSize'"
   }
 ]}

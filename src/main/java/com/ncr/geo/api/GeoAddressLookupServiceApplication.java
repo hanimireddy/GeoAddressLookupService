@@ -2,6 +2,7 @@ package com.ncr.geo.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,14 @@ import com.ncr.geo.api.util.AppInMemoryCacheManager;
 public class GeoAddressLookupServiceApplication {
 
 	private static final Logger logger = LoggerFactory.getLogger(GeoAddressLookupServiceApplication.class);
+	@Value("${rest.client.read.timeout}")
+	private int readTimeout;
+	@Value("${rest.client.connction.timeout}")
+	private int connectionTimeout;
+	@Value("${cache.object.timeToLive}")
+	private long timeToLive;
+	@Value("${cache.cleanup.timeInterval}")
+	private long timeInterval;
 	
 	public static void main(String[] args) {
 		logger.info("GeoAddressLookupServiceApplication started.");
@@ -29,16 +38,13 @@ public class GeoAddressLookupServiceApplication {
 	
 	private ClientHttpRequestFactory clientHttpRequestFactory() {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        factory.setReadTimeout(10000);
-        factory.setConnectTimeout(10000);
+        factory.setReadTimeout(readTimeout);
+        factory.setConnectTimeout(connectionTimeout);
         return factory;
     }
 	
 	@Bean
 	public AppInMemoryCacheManager<String, AddressLookupResponse> inMemoryCacheManager(){
-		long timeToLive = 200;
-		long timeInterval = 500;
-		int maxSize = 20;
-		return new AppInMemoryCacheManager<String, AddressLookupResponse>(timeToLive,timeInterval,maxSize);
+		return new AppInMemoryCacheManager<String, AddressLookupResponse>(timeToLive,timeInterval);
 	}
 }

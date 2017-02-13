@@ -40,22 +40,20 @@ public class AddressLookupServiceImpl implements AddressLookupService{
 	@Autowired
 	private AppInMemoryCacheManager<String, AddressLookupResponse> inMemoryCacheManager;
 	
-	@Value("")
-	private String geoCodeUrl;
+	@Value("${geo.reversecoding.url}")
+	private String geoReverseCodingUrl;
 	
 	public AddressLookupResponse getGeographicAddress(float latitude, float longitude)
 	{
 		logger.debug("AddressLookupServiceImpl:getGeographicAddress started.");
 		AddressLookupResponse addrLookupResp = null;
-		
-		String url = "https://maps.googleapis.com/maps/api/geocode/json";
 
 	    try {
 	    	Timestamp serviceReqTs = AppUtils.getCurrentDateTime();
 	    	addrLookupResp = new AddressLookupResponse();
 	    	String latlng = latitude+","+longitude;
 	    	StringBuffer geoCodeUrl = new StringBuffer();
-	    	geoCodeUrl.append(url);
+	    	geoCodeUrl.append(geoReverseCodingUrl);
 	    	geoCodeUrl.append("?latlng=");
 	    	geoCodeUrl.append(latlng);
 	    	addrLookupResp.setServiceReqTs(serviceReqTs);

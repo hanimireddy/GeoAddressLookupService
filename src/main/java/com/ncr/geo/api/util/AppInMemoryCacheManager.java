@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AppInMemoryCacheManager<K,T> {
+	private static final Logger logger = LoggerFactory.getLogger(AppInMemoryCacheManager.class);
 	private long timeToLive;
     private Map<K,CacheObject> cacheMap;
     
@@ -20,10 +22,10 @@ public class AppInMemoryCacheManager<K,T> {
         }
     }
     
-    public AppInMemoryCacheManager(long timeToLive, final long timerInterval, int maxItems) {
+    public AppInMemoryCacheManager(long timeToLive, final long timerInterval) {
         this.timeToLive = timeToLive * 1000;
  
-        cacheMap = new HashMap<>(maxItems);
+        cacheMap = new HashMap<>();
  
         if (timeToLive > 0 && timerInterval > 0) {
  
@@ -33,6 +35,7 @@ public class AppInMemoryCacheManager<K,T> {
                         try {
                             Thread.sleep(timerInterval * 1000);
                         } catch (InterruptedException ex) {
+                        	logger.error("Exception in AppInMemoryCacheManager: ", ex.getMessage());
                         }
                         cleanup();
                     }
@@ -81,7 +84,7 @@ public class AppInMemoryCacheManager<K,T> {
     public void cleanup() {
  
         long now = System.currentTimeMillis();
-        
+        logger.info("AppInMemoryCacheManager: cleanup method started");
         final List<K> deleteKey = new ArrayList<K>((cacheMap.size() / 2) + 1);
         	cacheMap.forEach((k,v)->{
 			  CacheObject c = (CacheObject)v;

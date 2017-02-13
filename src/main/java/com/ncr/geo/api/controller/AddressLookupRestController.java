@@ -4,6 +4,7 @@
 package com.ncr.geo.api.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,8 @@ public class AddressLookupRestController {
 		logger.debug("AddressLookupRestController:retrieveGeographicAddress method started!");
 		AddressLookupResponse response = null;
 		boolean isValidRequest = isValidCoordinates(requestParms);
-		if (isValidRequest) {
+		response = new AddressLookupResponse();
+		if (isValidRequest) {	
 			String latlng = requestParms.getLatitude() + "," + requestParms.getLongitude();
 			response = inMemoryCacheManager.get(latlng);
 			if (null == response)
@@ -57,12 +59,13 @@ public class AddressLookupRestController {
 						requestParms.getLongitude());
 		}
 		logger.debug("AddressLookupRestController:retrieveGeographicAddress method ended!");
+		
 		return response;
 
 	}
 
-	@RequestMapping(value = "/retrieveCachedDataStore", method = RequestMethod.GET)
-	public CacheResultsResponse retrieveCachedDataStore(@RequestParam int cnt) {
+	@RequestMapping(value = "/getCachedDataStore", method = RequestMethod.GET)
+	public CacheResultsResponse getCachedDataStore(@RequestParam int cnt) {
 
 		logger.info(
 				"AddressLookupRestController.retrieveCachedDataStore method started: number of elements requested from cached Object {}",
@@ -72,9 +75,10 @@ public class AddressLookupRestController {
 	
 		try {
 			cacheResultsResponse = new CacheResultsResponse();
+			latestLookupReqsList = new ArrayList<>();
 			List<AddressLookupResponse> cachedObjList = inMemoryCacheManager.getCachedMapObjectList();
 			// sort cachedObject list in ascending order
-			cachedObjList.sort((a, b) -> b.getServiceReqTs().compareTo(b.getServiceReqTs()));
+			cachedObjList.sort((a, b) -> a.getServiceReqTs().compareTo(b.getServiceReqTs()));
 
 			int cachedObjSize = cachedObjList.size();
 			logger.info("retrieveCachedDataStore method: total number of elements in the cached Object list {}",
@@ -89,6 +93,7 @@ public class AddressLookupRestController {
 				}
 			}else{
 				cacheResultsResponse.setStatusDescription("No Results found!");
+				cacheResultsResponse.setLookupResp(latestLookupReqsList);
 			}
 			
 			cacheResultsResponse.setStatusCode(HttpStatus.OK);
@@ -122,12 +127,12 @@ public class AddressLookupRestController {
 			float longitude = requestParms.getLongitude();
 
 			if (longitude > 180 || longitude < -180)
-				throw new IllegalStateException("The longitude of a point must be between -180 and 180");
+				throw new IllegalArgumentException("The longitude of a point must be between -180 and 180");
 
 			if (latitude > 90 || latitude < -90)
-				throw new IllegalStateException("The latitude of a point must be between -90 and 90");
-		} else {
-			throw new IllegalStateException("Longitude and Latitude values cannot be null");
+				throw new IllegalArgumentException("The latitude of a point must be between -90 and 90");
+		 } else {
+				throw new IllegalArgumentException("Longitude and Latitude values cannot be null");
 		}
 
 		return true;
